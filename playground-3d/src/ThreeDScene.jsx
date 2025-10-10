@@ -1,26 +1,19 @@
 // src/ThreeDScene.jsx
 import React, { useRef, useContext, useMemo } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
-import { OrbitControls, Html } from '@react-three/drei';
-import { PlayerContext, MOCK_SHOPS } from './App';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
+import { Html } from '@react-three/drei';
+import { PlayerContext, MOCK_SHOPS } from './App'; // Ensure these are exported from App.jsx
 
-// Color mapping helper
-const tailwindToHex = {
-  'bg-indigo-500': '#6366f1',
-  'bg-green-500': '#22c55e',
-  'bg-red-500': '#ef4444',
-  'bg-blue-500': '#3b82f6'
-};
-
-// Individual 3D Shop Box
-function Shop3D({ shop }) {
+// --- 3D Shop ---
+function Shop3D({ shop, onNavigate }) {
+  const { playerPos } = useContext(PlayerContext);
   const meshRef = useRef();
 
   const position = useMemo(() => {
-    const x = (shop.id * 10) - 25; // spread shops in X
-    const z = -10;
-    return [x, 0.5, z];
-  }, [shop.id]);
+    const x = (shop.id * 2) - 4;
+    const z = 5;
+    return [x - playerPos.x / 50, 0.5, z - playerPos.z / 50];
+  }, [shop.id, playerPos.x, playerPos.z]);
 
   useFrame(() => {
     if (meshRef.current) {
@@ -33,12 +26,13 @@ function Shop3D({ shop }) {
     <mesh
       ref={meshRef}
       position={position}
-      onClick={() => window.open(shop.url, '_blank')}
+      onClick={() => onNavigate(shop.url)}
       castShadow
       receiveShadow
+      scale={[1.2, 1.2, 1.2]}
     >
       <boxGeometry args={[1, 1, 1]} />
-      <meshStandardMaterial color={tailwindToHex[shop.color] || '#6366f1'} />
+      <meshStandardMaterial color={shop.color.replace('bg-', '') || 'royalblue'} />
       <Html distanceFactor={10} position={[0, 1.2, 0]} center>
         <div className="text-white font-bold text-center">{shop.name}</div>
       </Html>
@@ -46,7 +40,7 @@ function Shop3D({ shop }) {
   );
 }
 
-// Ground Plane
+// --- Ground Plane ---
 function Ground() {
   return (
     <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
@@ -56,18 +50,37 @@ function Ground() {
   );
 }
 
-function Camera() {
+// --- Smooth Camera Follow ---
+function CameraFollow() {
+  const { camera } = useThree();
   const { playerPos } = useContext(PlayerContext);
-  useFrame((state) => {
-    state.camera.position.x = playerPos.x / 10;
-    state.camera.position.z = 10 + playerPos.z / 10;
-    state.camera.lookAt(0, 0, 0);
+  const target = useRef([0, 5, 10]);
+
+  useFrame(() => {
+    const lerpFactor = 0.1;
+    // target camera position smoothly
+    camera.position.x += ((playerPos.x / 2) - camera.position.x) * lerpFactor;
+    camera.position.z += ((playerPos.z / 2 + 10) - camera.position.z) * lerpFactor;
+    camera.position.y += (5 - camera.position.y) * lerpFactor;
+    camera.lookAt(playerPos.x / 2, 0, playerPos.z / 2);
   });
+
   return null;
 }
 
-// Main 3D Scene
-export default function ThreeDScene() {
+// --- Player Marker ---
+function PlayerMarker() {
+  const { playerPos } = useContext(PlayerContext);
+  return (
+    <mesh position={[playerPos.x / 2, 0.5, playerPos.z / 2]}>
+      <sphereGeometry args={[0.3, 16, 16]} />
+      <meshStandardMaterial color="yellow" />
+    </mesh>
+  );
+}
+
+// --- Main 3D Scene ---
+export default function ThreeDScene({ onNavigate }) {
   return (
     <Canvas
       shadows
@@ -82,11 +95,16 @@ export default function ThreeDScene() {
         shadow-mapSize-width={1024}
         shadow-mapSize-height={1024}
       />
+
+      <CameraFollow />
+
       <Ground />
+
       {MOCK_SHOPS.map(shop => (
-        <Shop3D key={shop.id} shop={shop} />
+        <Shop3D key={shop.id} shop={shop} onNavigate={onNavigate} />
       ))}
-      <Camera />
+
+      <PlayerMarker />
     </Canvas>
   );
 }
