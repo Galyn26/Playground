@@ -1,0 +1,3 @@
+/Users/galyn/Desktop/Hackathon ideas/Playground_Galyn/build/CMakeFiles/Playground3D.dir
+/Users/galyn/Desktop/Hackathon ideas/Playground_Galyn/build/CMakeFiles/edit_cache.dir
+/Users/galyn/Desktop/Hackathon ideas/Playground_Galyn/build/CMakeFiles/rebuild_cache.dir
