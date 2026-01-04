@@ -1,13 +1,15 @@
 cmake_minimum_required(VERSION 3.10)
 project(Playground3D)
 
+# Use C++17 standard
 set(CMAKE_CXX_STANDARD 17)
-include_directories(include)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-file(GLOB SOURCES "src/*.cpp")
+# Include headers from include/ folder
+include_directories(${CMAKE_SOURCE_DIR}/include)
 
+# Collect all cpp source files in src/
+file(GLOB SOURCES "${CMAKE_SOURCE_DIR}/src/*.cpp")
+
+# Create the executable
 add_executable(Playground3D ${SOURCES})
-target_link_libraries(Playground3D PRIVATE glfw glm assimp) 
-target_include_directories(Playground3D PRIVATE ${CMAKE_SOURCE_DIR}/include)
-target_compile_features(Playground3D PRIVATE cxx_std_17)
-target_compile_options(Playground3D PRIVATE -Wall -Wextra -Wpedantic)   
