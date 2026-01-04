@@ -1,13 +1,12 @@
-#pragma once
+// In SearchEngine3D.h
 #include <vector>
-#include <string>
 #include "Object3D.h"
 
 class SearchEngine3D {
 public:
-    void addObject(const Object3D& obj);
-    void search(const std::string& query) const;
+    void addObject(Object3D* obj) { objects.push_back(obj); }
+    std::vector<Object3D*>& getObjects() { return objects; }
 
 private:
-    std::vector<Object3D> objects;
+    std::vector<Object3D*> objects;
 };

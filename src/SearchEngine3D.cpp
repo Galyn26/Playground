@@ -1,22 +1,14 @@
-#include "SearchEngine3D.h"
-#include <iostream>
+#pragma once
+#include <vector>
+#include <string>
+#include "Object3D.h"
 
-void SearchEngine3D::addObject(const Object3D& obj) {
-    objects.push_back(obj);
-}
+class SearchEngine3D {
+public:
+    void addObject(Object3D* obj);   // pointer version
+    void search(const std::string& query) const;
+    std::vector<Object3D*>& getObjects();
 
-void SearchEngine3D::search(const std::string& query) const {
-    std::cout << "Searching for: " << query << std::endl;
-
-    std::cout << "Objects currently in engine: ";
-    for (const auto& obj : objects) {
-        std::cout << obj.getName() << " ";
-    }
-    std::cout << std::endl;
-
-    for (const auto& obj : objects) {
-        if (obj.getName() == query) {
-            std::cout << "Found object matching query: " << query << std::endl;
-        }
-    }
-}
+private:
+    std::vector<Object3D*> objects;  // store pointers
+};

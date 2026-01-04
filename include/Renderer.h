@@ -4,9 +4,9 @@
 
 class Renderer {
 public:
-    void addObject(const Object3D& obj);
+    void addObject(Object3D* obj);        // pointer
     void renderFrame() const;
 
 private:
-    std::vector<Object3D> sceneObjects;
+    std::vector<Object3D*> sceneObjects;  // store pointers
 };

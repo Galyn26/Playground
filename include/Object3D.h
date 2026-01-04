@@ -1,13 +1,16 @@
 #pragma once
 #include <string>
-#include <iostream>
+#include "Transform.h"
 
 class Object3D {
 public:
     Object3D(const std::string& name);
+
+    void render() const;
+    Transform& getTransform();
     const std::string& getName() const;
-    void render() const; // placeholder
 
 private:
     std::string name;
+    Transform transform;
 };
